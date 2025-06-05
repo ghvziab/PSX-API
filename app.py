@@ -12,7 +12,7 @@ def psxdata():
     try:
         data = scraper()
         return jsonify(data)
-    except:
+    except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
