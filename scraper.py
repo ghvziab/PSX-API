@@ -3,6 +3,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+import schedule
+import time
+from datetime import datetime
+
 
 def scraper():
     #setup chrome driver
@@ -39,3 +43,12 @@ def scraper():
     driver.quit()
     return stocks
     
+def runscraper():
+    now = datetime.now
+    if now.weekday() < 5 and now.hour >=9 and now.hour <= 17:
+        scraper()
+
+schedule.every(5).minutes.run(runscraper)
+def scheduler():
+    schedule.run_pending()
+    time.sleep(1)
