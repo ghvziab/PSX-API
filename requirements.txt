@@ -2,3 +2,4 @@ schedule
 selenium
 datetime
 flask
+gunicorn
