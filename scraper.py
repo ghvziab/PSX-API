@@ -13,6 +13,7 @@ from datetime import datetime
 def scraper():
     #setup chrome driver
     chrome_options = Options()
+    chrome_options.binary_location = "/usr/bin/chromium-browser"  # for Render
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
