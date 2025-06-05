@@ -1,8 +1,11 @@
 from flask import Flask, jsonify
 from scraper import scraper
 import traceback
+import logging
 
 app = Flask(__name__)
+
+app.logger.setLevel(logging.DEBUG)
 
 @app.route("/psx-market-watch")
 def psxdata():
