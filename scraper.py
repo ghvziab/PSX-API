@@ -48,7 +48,8 @@ def runscraper():
     if now.weekday() < 5 and now.hour >=9 and now.hour <= 17:
         scraper()
 
-schedule.every(5).minutes.run(runscraper)
+schedule.every(5).minutes.do(runscraper)
 def scheduler():
-    schedule.run_pending()
-    time.sleep(1)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
