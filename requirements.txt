@@ -1,6 +1,5 @@
 schedule
-selenium
+playwright
 datetime
 flask
 gunicorn
-webdriver-manager
