@@ -22,6 +22,7 @@ def scraper():
 
         page.is_visible('table.tbl dataTable no-footer')
         table = page.inner_html('//table[@class="tbl dataTable no-footer"]')
+        browser.close()
         soup = BeautifulSoup(table, 'lxml')
 
         stocks = []
