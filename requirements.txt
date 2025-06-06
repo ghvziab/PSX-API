@@ -3,4 +3,4 @@ playwright
 datetime
 flask
 gunicorn
-beautifulsoup
+beautifulsoup4
