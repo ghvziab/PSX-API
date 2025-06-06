@@ -3,7 +3,17 @@ from bs4 import BeautifulSoup
 
 def scraper():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
+                "--disable-gpu",
+                "--disable-software-rasterizer",
+                "--single-process",
+                "--no-zygote",
+            ]
+        )
         page =  browser.new_page()
         page.goto('https://dps.psx.com.pk')
 
