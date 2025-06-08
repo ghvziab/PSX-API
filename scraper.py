@@ -1,36 +1,57 @@
-from playwright.sync_api import sync_playwright
-from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.firefox.options import Options
+import schedule
+import time
+from datetime import datetime
+
 
 def scraper():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=True,
-            args=[
-                "--disable-dev-shm-usage",
-                "--no-sandbox",
-                "--disable-gpu",
-                "--disable-software-rasterizer",
-                "--single-process",
-                "--no-zygote",
-            ]
+    #setup chrome driver
+    options = Options()
+    options.headless = True
+    options.add_argument('Mozilla/5.0 (Windows NT 10.0; Win64; x64)')
+    stocks = []
+    driver = webdriver.Firefox(options=options)
+    driver.get('https://dps.psx.com.pk')
+
+    #close the initial warning page
+    try:
+        button1 = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//button[@class="tingle-modal__close"]'))
         )
-        page =  browser.new_page()
-        page.goto('https://dps.psx.com.pk')
+        button1.click()
+    except:
+        pass
 
-        page.click('button[class=tingle-modal__close]')
-        page.locator('//select[@name="DataTables_Table_0_length"]').select_option('All')
+    #dropdowntable selector
+    dropdown = driver.find_element(By.XPATH, '//select[@name="DataTables_Table_0_length"]')
+    select = Select(dropdown)
+    select.select_by_visible_text("All")
+    driver.implicitly_wait(2)
 
-        page.is_visible('table.tbl dataTable no-footer')
-        table = page.inner_html('//table[@class="tbl dataTable no-footer"]')
-        browser.close()
-        soup = BeautifulSoup(table, 'lxml')
+    #finding tables and then its rows
+    table = driver.find_element(By.XPATH, '//table[@class="tbl dataTable no-footer"]')
+    rows = table.find_elements(By.TAG_NAME, "tr")
 
-        stocks = []
-        rows = soup.find_all('tr')
-        for row in rows[1:]:
-            cols = row.find_all('td')
-            data = [col.text.strip() for col in cols]
-            stocks.append(data)
-        
-        #page.wait_for_timeout(20000)
+    #finding cells
+    for row in rows[1:]:
+        cols = row.find_elements(By.TAG_NAME, 'td')
+        data = [col.text.strip() for col in cols]
+        stocks.append(data)
+    driver.quit()
     return stocks
+
+'''
+def runscraper():
+    now = datetime.now
+    if now.weekday() < 5 and now.hour >=9 and now.hour <= 17:
+        scraper()
+
+schedule.every(5).minutes.run(runscraper)
+def scheduler():
+    schedule.run_pending()
+    time.sleep(1)
+'''
