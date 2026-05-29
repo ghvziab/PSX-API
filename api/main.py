@@ -31,8 +31,9 @@ def get_ticker(symbol: str):
     """Returns data for a specific ticker."""
     try:
         stock = get_stock(symbol)
-        if stock:
-            return {"status": "success", "data": stock}
-        raise HTTPException(status_code=404, detail=f"Ticker {symbol} not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+        
+    if stock:
+        return {"status": "success", "data": stock}
+    raise HTTPException(status_code=404, detail=f"Ticker {symbol} not found")

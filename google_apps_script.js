@@ -1,11 +1,45 @@
 /**
  * Configuration
  * Change this to your Vercel deployment URL when ready.
- * e.g., "https://my-psx-api.vercel.app/api"
- * Note: Localhost will NOT work in Google Sheets because Google's servers cannot see your computer.
- * Use ngrok (e.g., "https://<your-ngrok-id>.ngrok-free.app/api") for local testing.
  */
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = "https://psx-api-ten.vercel.app/api";
+
+/**
+ * Helper function to fetch data and translate errors into human-readable messages.
+ */
+function fetchTickerData(ticker) {
+  if (!ticker) return { error: "Error: Empty cell or missing ticker" };
+
+  ticker = String(ticker).trim();
+
+  // 1. Catch unquoted strings that Google Sheets turns into #NAME? or #REF! errors
+  if (ticker.startsWith("#")) {
+    return { error: 'Error: Missing quotes! Try "SYMBOL" instead of SYMBOL' };
+  }
+
+  const url = `${API_BASE_URL}/ticker/${ticker}`;
+  try {
+    const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    const code = response.getResponseCode();
+
+    // 2. Handle HTTP Errors
+    if (code === 404) {
+      return { error: `Error: Ticker '${ticker}' not found on PSX` };
+    } else if (code >= 500) {
+      return { error: `Error: Unexpected API response (${code})` };
+    }
+
+    const json = JSON.parse(response.getContentText());
+    if (json.status === "success" && json.data) {
+      return { data: json.data };
+    }
+
+    return { error: "Error: API returned invalid data format" };
+  } catch (e) {
+    // 3. Handle Network/Execution Errors
+    return { error: "Error: Could not connect to the API" };
+  }
+}
 
 /**
  * Fetches the current price of a PSX ticker.
@@ -15,19 +49,8 @@ const API_BASE_URL = "http://localhost:8000/api";
  * @customfunction
  */
 function PSX_PRICE(ticker) {
-  if (!ticker) return null;
-  
-  const url = `${API_BASE_URL}/ticker/${ticker}`;
-  try {
-    const response = UrlFetchApp.fetch(url, {muteHttpExceptions: true});
-    const json = JSON.parse(response.getContentText());
-    if (json.status === "success" && json.data) {
-      return json.data.price;
-    }
-    return "N/A";
-  } catch (e) {
-    return "Error";
-  }
+  const result = fetchTickerData(ticker);
+  return result.error ? result.error : result.data.price;
 }
 
 /**
@@ -38,19 +61,8 @@ function PSX_PRICE(ticker) {
  * @customfunction
  */
 function PSX_CHANGE(ticker) {
-  if (!ticker) return null;
-  
-  const url = `${API_BASE_URL}/ticker/${ticker}`;
-  try {
-    const response = UrlFetchApp.fetch(url, {muteHttpExceptions: true});
-    const json = JSON.parse(response.getContentText());
-    if (json.status === "success" && json.data) {
-      return json.data.change;
-    }
-    return "N/A";
-  } catch (e) {
-    return "Error";
-  }
+  const result = fetchTickerData(ticker);
+  return result.error ? result.error : result.data.change;
 }
 
 /**
@@ -61,17 +73,6 @@ function PSX_CHANGE(ticker) {
  * @customfunction
  */
 function PSX_CHANGE_PCT(ticker) {
-  if (!ticker) return null;
-  
-  const url = `${API_BASE_URL}/ticker/${ticker}`;
-  try {
-    const response = UrlFetchApp.fetch(url, {muteHttpExceptions: true});
-    const json = JSON.parse(response.getContentText());
-    if (json.status === "success" && json.data) {
-      return json.data.change_percent;
-    }
-    return "N/A";
-  } catch (e) {
-    return "Error";
-  }
+  const result = fetchTickerData(ticker);
+  return result.error ? result.error : result.data.change_percent;
 }
