@@ -1,7 +1,5 @@
-schedule
-selenium
-webdriver-manager
-datetime
-flask
-gunicorn
+fastapi
+uvicorn
+requests
 beautifulsoup4
+cachetools
