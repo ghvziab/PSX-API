@@ -57,14 +57,13 @@ def get_all_stocks():
                 # 5: Low
                 # 6: Current
                 # 7: Change
-                # 8: Change %
-                # 9: Volume
+                name_tag = cols[0].find('a')
+                name = name_tag['data-title'] if name_tag and name_tag.has_attr('data-title') else symbol
                 
-                name = cols[1].text.strip()
-                ldcp = cols[2].text.strip().replace(',', '')
-                open_val = cols[3].text.strip().replace(',', '')
-                high = cols[4].text.strip().replace(',', '')
-                low = cols[5].text.strip().replace(',', '')
+                ldcp = cols[3].text.strip().replace(',', '')
+                open_val = cols[4].text.strip().replace(',', '')
+                high = cols[5].text.strip().replace(',', '')
+                low = cols[6].text.strip().replace(',', '')
                 current = cols[7].text.strip().replace(',', '')
                 change = cols[8].text.strip().replace(',', '')
                 change_pct = cols[9].text.strip() if len(cols) > 9 else "0%"
