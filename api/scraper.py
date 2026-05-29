@@ -60,6 +60,11 @@ def get_all_stocks():
                 # 8: Change %
                 # 9: Volume
                 
+                name = cols[1].text.strip()
+                ldcp = cols[2].text.strip().replace(',', '')
+                open_val = cols[3].text.strip().replace(',', '')
+                high = cols[4].text.strip().replace(',', '')
+                low = cols[5].text.strip().replace(',', '')
                 current = cols[7].text.strip().replace(',', '')
                 change = cols[8].text.strip().replace(',', '')
                 change_pct = cols[9].text.strip() if len(cols) > 9 else "0%"
@@ -67,6 +72,11 @@ def get_all_stocks():
                 
                 stocks[symbol] = {
                     "symbol": symbol,
+                    "name": name,
+                    "ldcp": float(ldcp) if ldcp and ldcp != '-' else 0.0,
+                    "open": float(open_val) if open_val and open_val != '-' else 0.0,
+                    "high": float(high) if high and high != '-' else 0.0,
+                    "low": float(low) if low and low != '-' else 0.0,
                     "price": float(current) if current and current != '-' else 0.0,
                     "change": float(change) if change and change != '-' else 0.0,
                     "change_percent": change_pct,
